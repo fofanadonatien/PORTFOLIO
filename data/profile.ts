@@ -8,9 +8,9 @@ export const profile = {
   // Titre principal du hero (le mot entre ** ** sera coloré en accent)
   heroTitle: "Futur **consultant ERP**, entre le métier et le système d'information.",
   heroLead:
-    "Étudiant en MIAGE, je me forme au conseil en systèmes d'information et aux ERP. J'aime comprendre un besoin métier et le traduire en solution concrète — sans casser ce qui fonctionne déjà.",
+    "Étudiant en MIAGE, je me forme au conseil en systèmes d'information et aux ERP. J'aime comprendre un besoin métier et le traduire en solution concrète - sans casser ce qui fonctionne déjà.",
   availability:
-    "Étudiant MIAGE — je recherche un stage de 6 mois (2027–2028)",
+    "Étudiant MIAGE - je recherche un stage de 6 mois (2027–2028)",
   introText:
     "Après un parcours dans les travaux publics, j'ai repris mes études en informatique de gestion. Aujourd'hui, je vise un métier de conseil en ERP et systèmes d'information — un domaine où l'on écoute le métier autant qu'on maîtrise la technique.",
   photo: "/donatien.jpg",

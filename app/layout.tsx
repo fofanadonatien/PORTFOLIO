@@ -8,8 +8,8 @@ const SITE_URL = "https://donatien-fofana.vercel.app";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${profile.name} — Futur consultant ERP / SI`,
-    template: `%s — ${profile.name}`,
+    default: `${profile.name} - Futur consultant ERP / SI`,
+    template: `%s - ${profile.name}`,
   },
   description:
     "Étudiant MIAGE, futur consultant ERP / systèmes d'information. Analyse métier, Java, Angular, Oracle, Spring Boot. Je modernise les systèmes métier sans casser ce qui fonctionne.",
