@@ -136,7 +136,7 @@ Si tu veux `donatienfofana.fr` au lieu de `.vercel.app` :
 - Dans Vercel : Project → Settings → Domains → ajoute ton domaine et suis les instructions.
 
 **Important après avoir un vrai domaine :** remplace l'adresse
-`https://portfolio-eight-liard-55.vercel.app` par ton vrai domaine dans ces 3 fichiers :
+`https://donatien-fofana.vercel.app` par ton vrai domaine dans ces 3 fichiers :
 `app/layout.tsx`, `app/sitemap.ts`, `app/robots.ts`.
 
 ---
