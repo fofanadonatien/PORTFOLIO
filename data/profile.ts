@@ -29,8 +29,9 @@ export const profile = {
 
 // Bandeau de chiffres (facile à ajuster)
 export const stats = [
-  { n: "17 ans", l: "de logique métier préservée sur le socle Oracle PHASEO" },
-  { n: "12", l: "entités JPA modélisées sur le projet intégrateur full-stack" },
-  { n: "2", l: "expériences de terrain avant l'informatique (VRD)" },
-  { n: "7", l: "certifications Google Data Analytics validées" },
+  { n: "17 ans", l: "de logique métier conservée dans l'ERP PHASEO depuis 2009" },
+  { n: "400+", l: "points de livraison optimisés dans le projet VRP" },
+  { n: "3", l: "projets complets présentés sous forme d'études de cas" },
+  { n: "2", l: "domaines d'expérience : Génie Civil • Informatique" },
+  { n: "4+", l: "parcours de certification (Data • ERP • IA • Gestion de projet)" },
 ];

@@ -48,7 +48,7 @@ export const projects: Project[] = [
   },
   {
     slug: "supermarche",
-    detailed: false,
+    detailed: true,
     github: "https://github.com/fofanadonatien/Analyse_des_ventes_d_un-supermarche",
     tag: "Projet data · Décisionnel",
     title: "Analyse des ventes d'un supermarché",

@@ -39,8 +39,9 @@ export default function Nav() {
           {[
             ["Travaux", "/#travaux"],
             ["Compétences", "/#competences"],
+            ["Ma méthode", "/methode"],
+            ["Pourquoi les ERP", "/pourquoi-erp"],
             ["Parcours", "/#parcours"],
-            ["Recommandation", "/#reco"],
           ].map(([label, href]) => (
             <Link key={label} href={href} className="text-sm transition-colors hover:text-ink" style={{ color: "var(--ink-2)" }}>
               {label}

@@ -3,8 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { profile } from "@/data/profile";
 
-// Révèle au scroll
-export function Reveal({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+// Révèle au scroll. `delay` (ms) permet un effet d'apparition en cascade.
+export function Reveal({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
   const ref = useRef<HTMLDivElement>(null);
   const [shown, setShown] = useState(false);
   useEffect(() => {
@@ -18,7 +18,7 @@ export function Reveal({ children, className = "" }: { children: React.ReactNode
     return () => io.disconnect();
   }, []);
   return (
-    <div ref={ref} className={`reveal ${shown ? "in" : ""} ${className}`}>
+    <div ref={ref} className={`reveal ${shown ? "in" : ""} ${className}`} style={delay ? { transitionDelay: `${delay}ms` } : undefined}>
       {children}
     </div>
   );
@@ -53,9 +53,10 @@ export function Footer() {
     <footer style={{ borderTop: "1px solid var(--line)", background: "var(--surface)" }} className="py-9">
       <div className="max-w-content mx-auto px-6 flex flex-wrap justify-between items-center gap-4 text-[13px]" style={{ color: "var(--ink-2)" }}>
         <span>© 2026 {profile.name} — Futur consultant ERP / SI</span>
-        <div className="flex gap-5">
-          <Link href="/#top" className="hover:text-accent transition-colors">Haut de page</Link>
+        <div className="flex gap-5 flex-wrap">
           <Link href="/#travaux" className="hover:text-accent transition-colors">Travaux</Link>
+          <Link href="/methode" className="hover:text-accent transition-colors">Ma méthode</Link>
+          <Link href="/pourquoi-erp" className="hover:text-accent transition-colors">Pourquoi les ERP</Link>
           <Link href="/#contact" className="hover:text-accent transition-colors">Contact</Link>
         </div>
       </div>

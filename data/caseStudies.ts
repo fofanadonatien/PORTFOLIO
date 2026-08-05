@@ -74,9 +74,15 @@ export const caseStudies: Record<string, CaseStudy> = {
     ],
     stack: ["Angular", "TypeScript", "Node / Express", "Oracle", "SOAP / XML", "Analyse fonctionnelle"],
     captures: [
-      { label: "Écran de recherche d'interlocuteurs" },
-      { label: "Fiche détaillée d'un client" },
-      { label: "Vue des informations personnelles" },
+      { label: "Interface historique (client lourd)" },
+      { label: "Interface web Angular" },
+      { label: "Structure de la base Oracle" },
+      { label: "Exemple d'échange XML" },
+      { label: "Schéma d'architecture" },
+      { label: "Diagramme de flux" },
+      { label: "Extrait de documentation technique" },
+      { label: "Extrait de code" },
+      { label: "Démonstration de l'application" },
     ],
     repoLabel: "Dépôt privé",
     repoNote:
@@ -126,12 +132,90 @@ export const caseStudies: Record<string, CaseStudy> = {
     ],
     stack: ["Spring Boot", "JPA / Hibernate", "MapStruct", "PostgreSQL", "Angular", "Leaflet", "Tests d'intégration"],
     captures: [
-      { label: "Carte des tournées optimisées" },
-      { label: "Comparateur de stratégies" },
+      { label: "Écran d'accueil" },
+      { label: "Carte Leaflet des tournées" },
+      { label: "Comparateur Grid vs Greedy" },
+      { label: "Schéma d'architecture" },
+      { label: "Diagramme UML du domaine" },
+      { label: "Aperçu du backend Spring Boot" },
+      { label: "Endpoints API REST" },
+      { label: "Résultat d'une optimisation" },
     ],
     repoLabel: "Projet d'équipe",
     repoNote:
       "Projet réalisé en groupe de 6. Les contributions décrites ici sont les miennes.",
     repoUrl: "https://github.com/fofanadonatien", // ⚠️ remplace par l'URL du dépôt public une fois créé
+  },
+
+  supermarche: {
+    slug: "supermarche",
+    eyebrow: "Projet personnel · Data Analyst / BI",
+    title: "Transformer des ventes brutes en décisions business",
+    intro:
+      "Un jeu de données de ventes, promotions et pertes sur quatre ans, modélisé et mis en dashboard Power BI pour répondre à une question simple : où gagne-t-on réellement de l'argent, et où en perd-on ?",
+    meta: [
+      { label: "Contexte", value: "Projet personnel · Data Analyst / BI" },
+      { label: "Rôle", value: "Modélisation, DAX, dashboards, recommandations" },
+      { label: "Stack", value: "Power BI · DAX · Power Query" },
+      { label: "Données", value: "Jeu de données type Kaggle (ventes 2020-2023)" },
+    ],
+    blocks: [
+      {
+        heading: "Le contexte",
+        body: [
+          "Ce projet analyse la performance commerciale d'un supermarché à partir de quatre jeux de données bruts : ventes, produits/catégories, promotions et pertes par magasin, sur la période 2020-2023.",
+          "L'objectif n'était pas de produire de jolis graphiques, mais de répondre à des questions de gestion concrètes : quels produits sont rentables, les promotions servent-elles vraiment la marge, et où se concentrent les pertes ?",
+        ],
+      },
+      {
+        heading: "Le problème",
+        body: [
+          "Les données brutes ne permettaient de répondre à aucune de ces questions directement : le chiffre d'affaires ne dit rien de la rentabilité, le volume de ventes ne dit rien de l'effet réel d'une promotion, et les pertes n'étaient pas rapportées au chiffre d'affaires des produits concernés.",
+          "Il fallait d'abord nettoyer et modéliser les données avant de pouvoir les interroger — le dashboard n'est venu qu'après.",
+        ],
+      },
+      {
+        heading: "Mon approche",
+        body: [
+          "Nettoyage et transformation des quatre sources sous Power Query, puis modélisation en schéma en étoile pour relier ventes, produits, promotions et pertes.",
+          "Écriture de mesures DAX pour répondre directement aux questions de gestion : chiffre d'affaires, marge brute, ROI des promotions, taux de pertes et contribution des meilleurs produits à la marge totale.",
+          "Construction des dashboards Power BI à partir de ces mesures, pensés pour la décision plutôt que pour l'exhaustivité.",
+        ],
+      },
+      {
+        heading: "Ce que les chiffres ont montré",
+        body: [
+          "Sur la période : 3,37 M€ de chiffre d'affaires (+20,6 %), une marge brute moyenne de 36,91 % et un taux de pertes global de 9,97 %.",
+          "Les 10 produits les plus performants génèrent 65 % de la marge totale — une forte concentration de la rentabilité sur un petit nombre de références.",
+          "45 % des promotions n'améliorent pas la rentabilité malgré une hausse des volumes vendus. Les pertes, elles, se concentrent surtout sur des produits frais sensibles à la péremption.",
+        ],
+      },
+      {
+        heading: "Recommandations",
+        body: [
+          "Cibler les promotions sur les produits à bonne marge plutôt que sur le volume, ajuster les quantités commandées pour limiter les invendus sur les produits périssables, et sensibiliser les équipes à la gestion des retours et des pertes.",
+        ],
+      },
+      {
+        heading: "Ce que j'en retiens",
+        body: [
+          "La partie la plus utile n'a pas été de construire des visuels, mais de poser le bon modèle de données avant de les interroger — un schéma en étoile mal pensé aurait rendu toute mesure DAX peu fiable.",
+          "C'est une compétence directement transférable au décisionnel dans un contexte ERP : avant de restituer une donnée, il faut comprendre comment elle est produite et ce qu'elle représente vraiment.",
+        ],
+      },
+    ],
+    stack: ["Power BI", "DAX", "Power Query", "Modélisation en étoile", "Analyse business"],
+    captures: [
+      { label: "Vue d'ensemble du dashboard" },
+      { label: "Visuels Power BI (CA, marge, pertes)" },
+      { label: "Modèle de données et requêtes" },
+      { label: "Modèle en schéma en étoile" },
+      { label: "Nettoyage des données (Power Query)" },
+      { label: "KPI clés (CA, marge, taux de pertes)" },
+      { label: "Recommandations business" },
+    ],
+    repoLabel: "Projet personnel",
+    repoNote: "Jeu de données public de type Kaggle, nettoyé et modélisé pour ce projet.",
+    repoUrl: "https://github.com/fofanadonatien/Analyse_des_ventes_d_un-supermarche",
   },
 };

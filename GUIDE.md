@@ -60,8 +60,7 @@ Ouvre `data/content.ts`, trouve la liste `certifications`, et ajoute un bloc :
 {
   badge: "SAP",
   title: "SAP — Module MM (Materials Management)",
-  statusLabel: "validé",   // ou "en préparation"
-  status: "done",          // "done" = vert, "wip" = orange
+  status: "done",          // "done" = pastille verte, "wip" = pastille orange
   desc: "Ce que tu as appris et pourquoi cette certification renforce ton profil.",
 },
 ```

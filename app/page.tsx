@@ -2,9 +2,11 @@ import Link from "next/link";
 import Image from "next/image";
 import Nav from "@/components/Nav";
 import { Reveal, RichText, Footer, GithubIcon } from "@/components/ui";
+import { Carousel } from "@/components/Carousel";
 import { profile, stats } from "@/data/profile";
 import { projects, miniProjects } from "@/data/projects";
-import { skills, certifications, recommendation, parcours } from "@/data/content";
+import { caseStudies } from "@/data/caseStudies";
+import { skills, certifications, recommendation, parcours, lookingFor, contact } from "@/data/content";
 
 export default function Home() {
   const heroTitle = profile.heroTitle.split(/(\*\*[^*]+\*\*)/g);
@@ -59,11 +61,11 @@ export default function Home() {
 
       {/* BANDEAU CHIFFRES */}
       <div style={{ borderTop: "1px solid var(--line)", borderBottom: "1px solid var(--line)", background: "var(--surface)" }}>
-        <div className="max-w-content mx-auto px-0 grid grid-cols-2 md:grid-cols-4">
+        <div className="max-w-content mx-auto px-6 py-10 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
           {stats.map((s, i) => (
-            <div key={i} className="px-6 py-[30px]" style={{ borderLeft: i % 4 === 0 ? "none" : "1px solid var(--line)", borderTop: i >= 2 ? "1px solid var(--line)" : undefined }}>
-              <div className="text-[28px] font-semibold" style={{ letterSpacing: "-.02em" }}>{s.n}</div>
-              <div className="text-[13px] mt-1" style={{ color: "var(--ink-2)" }}>{s.l}</div>
+            <div key={i} className="rounded-xl px-5 py-[22px]" style={{ background: "var(--canvas)", border: "1px solid var(--line)" }}>
+              <div className="text-[26px] font-semibold" style={{ letterSpacing: "-.02em" }}>{s.n}</div>
+              <div className="text-[13px] mt-1.5" style={{ color: "var(--ink-2)", lineHeight: 1.4 }}>{s.l}</div>
             </div>
           ))}
         </div>
@@ -113,11 +115,8 @@ export default function Home() {
                         )}
                       </div>
                     </div>
-                    <div className="grid place-items-center p-[26px] min-h-[180px]" style={{ borderLeft: "1px solid var(--line)", background: "linear-gradient(135deg, var(--line-soft), var(--surface))" }}>
-                      <div className="text-center font-mono text-[13px]" style={{ color: "var(--ink-3)" }}>
-                        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="mx-auto mb-2.5 opacity-50"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-                        {p.visualLabel}<br /><span className="opacity-70">(à intégrer)</span>
-                      </div>
+                    <div style={{ borderLeft: "1px solid var(--line)" }}>
+                      <Carousel slides={caseStudies[p.slug]?.captures ?? [{ label: p.visualLabel }]} />
                     </div>
                   </div>
                 </article>
@@ -194,7 +193,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CERTIFICATIONS */}
+      {/* CERTIFICATIONS — vitrine horizontale */}
       <section id="certs" className="py-20" style={{ background: "var(--surface)", borderTop: "1px solid var(--line)", borderBottom: "1px solid var(--line)" }}>
         <div className="max-w-content mx-auto px-6">
           <Reveal>
@@ -203,27 +202,35 @@ export default function Home() {
               <h2 className="text-[clamp(26px,3.4vw,34px)]">Une montée en compétences continue.</h2>
             </div>
           </Reveal>
-          <div className="grid md:grid-cols-2 gap-4">
-            {certifications.map((c) => (
-              <Reveal key={c.title}>
-                <div className="rounded-xl p-6 h-full flex gap-4" style={{ background: "var(--surface)", border: "1px solid var(--line)" }}>
-                  <div className="w-[42px] h-[42px] rounded-[9px] grid place-items-center flex-shrink-0 font-mono font-medium text-[12px]" style={{ background: "var(--accent-wash)", color: "var(--accent)" }}>{c.badge}</div>
-                  <div>
-                    <h4 className="text-[15px] mb-1.5">
-                      {c.title}
-                      <span className="font-mono text-[10.5px] uppercase tracking-wide px-2 py-0.5 rounded ml-2 align-middle"
-                        style={c.status === "done"
-                          ? { background: "color-mix(in srgb, var(--ok) 12%, transparent)", color: "var(--ok)" }
-                          : { background: "color-mix(in srgb, var(--warn) 14%, transparent)", color: "var(--warn)" }}>
-                        {c.statusLabel}
-                      </span>
-                    </h4>
-                    <p className="text-[13px]" style={{ color: "var(--ink-2)", lineHeight: 1.5 }}>{c.desc}</p>
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
+          <Reveal>
+            <div className="marquee -mx-6 px-6">
+              <div className="marquee-track gap-4">
+                {[...certifications, ...certifications].map((c, i) => {
+                  const CardTag = c.href ? "a" : "div";
+                  return (
+                    <CardTag
+                      key={`${c.title}-${i}`}
+                      {...(c.href ? { href: c.href, target: "_blank", rel: "noopener" } : {})}
+                      aria-hidden={i >= certifications.length ? true : undefined}
+                      className="flex-shrink-0 w-[200px] rounded-xl p-5 flex flex-col items-center text-center gap-3 transition-colors"
+                      style={{ background: "var(--canvas)", border: "1px solid var(--line)", cursor: c.href ? "pointer" : "default" }}
+                    >
+                      <div className="relative w-14 h-14 rounded-full grid place-items-center font-mono font-medium text-[13px]" style={{ background: "var(--accent-wash)", color: "var(--accent)" }}>
+                        {c.badge}
+                        <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full" style={{ background: c.status === "done" ? "var(--ok)" : "var(--warn)", border: "2px solid var(--canvas)" }} />
+                      </div>
+                      <h4 className="text-[14px] leading-snug">{c.title}</h4>
+                    </CardTag>
+                  );
+                })}
+              </div>
+            </div>
+          </Reveal>
+          <Reveal>
+            <p className="text-[14.5px] mt-6 max-w-[620px]" style={{ color: "var(--ink-3)" }}>
+              Je complète régulièrement mes compétences en systèmes d'information, gestion de projet, data, IA et technologies SAP afin d'élargir ma vision des projets numériques.
+            </p>
+          </Reveal>
         </div>
       </section>
 
@@ -237,6 +244,23 @@ export default function Home() {
               {parcours.paragraphs.map((p, i) => (
                 <p key={i} className="text-[18px] max-w-[760px] mb-4" style={{ color: "var(--ink-2)", lineHeight: 1.6 }}>{p}</p>
               ))}
+              <div className="flex flex-wrap gap-x-8 gap-y-2 mt-2">
+                <Link href="/pourquoi-erp" className="arrow-link">Pourquoi les ERP ? →</Link>
+                <Link href="/methode" className="arrow-link">Ma façon de travailler →</Link>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* CE QUE JE RECHERCHE */}
+      <section className="py-20">
+        <div className="max-w-content mx-auto px-6">
+          <Reveal>
+            <div className="rounded-2xl p-11" style={{ background: "var(--surface)", border: "1px solid var(--line)" }}>
+              <span className="eyebrow block mb-3">{lookingFor.eyebrow}</span>
+              <h2 className="text-[clamp(24px,3vw,30px)] mb-4 max-w-[640px]">{lookingFor.title}</h2>
+              <p className="text-[18px] max-w-[680px]" style={{ color: "var(--ink-2)", lineHeight: 1.65 }}>{lookingFor.paragraph}</p>
             </div>
           </Reveal>
         </div>
@@ -247,9 +271,9 @@ export default function Home() {
         <div className="max-w-content mx-auto px-6">
           <Reveal>
             <span className="eyebrow">Contact</span>
-            <h2 className="text-[clamp(28px,4vw,40px)] mt-3 mb-4">Un stage, une alternance, un projet ?</h2>
+            <h2 className="text-[clamp(28px,4vw,40px)] mt-3 mb-4">{contact.title}</h2>
             <p className="text-[18px] max-w-[640px] mx-auto mb-[30px]" style={{ color: "var(--ink-2)", lineHeight: 1.6 }}>
-              Je cherche un stage de 6 mois en M1 (systèmes d'information / ERP / développement), puis une alternance en M2. N'hésitez pas à m'écrire ou à m'appeler.
+              {contact.paragraph}
             </p>
             <div className="flex gap-3 justify-center flex-wrap">
               <a href={`mailto:${profile.contact.email}`} className="btn btn-primary">
