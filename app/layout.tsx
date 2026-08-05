@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { profile } from "@/data/profile";
 
-// ⚠️ Remplace par ton vrai domaine une fois déployé (ex: https://donatienfofana.fr)
-const SITE_URL = "https://donatien-fofana.vercel.app";
+// ⚠️ Remplace par ton vrai domaine si tu achètes un nom de domaine personnalisé plus tard
+const SITE_URL = "https://portfolio-eight-liard-55.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
