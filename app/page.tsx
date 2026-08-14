@@ -1,14 +1,27 @@
+"use client";
 import Link from "next/link";
 import Image from "next/image";
 import Nav from "@/components/Nav";
 import { Reveal, RichText, Footer, GithubIcon } from "@/components/ui";
 import { Carousel } from "@/components/Carousel";
-import { profile, stats } from "@/data/profile";
-import { projects, miniProjects } from "@/data/projects";
-import { caseStudies } from "@/data/caseStudies";
-import { skills, certifications, recommendation, parcours, lookingFor, contact } from "@/data/content";
+import { useLanguage } from "@/components/LanguageProvider";
 
 export default function Home() {
+  const { t } = useLanguage();
+  const {
+    profile,
+    stats,
+    skills,
+    certifications,
+    recommendation,
+    parcours,
+    lookingFor,
+    contact,
+    projects,
+    miniProjects,
+    caseStudies,
+    ui,
+  } = t;
   const heroTitle = profile.heroTitle.split(/(\*\*[^*]+\*\*)/g);
 
   return (
@@ -33,8 +46,8 @@ export default function Home() {
               {profile.heroLead}
             </p>
             <div className="flex gap-3 flex-wrap mb-[34px]">
-              <Link href="#travaux" className="btn btn-primary">Voir mes travaux</Link>
-              <Link href="#contact" className="btn btn-ghost">Me contacter</Link>
+              <Link href="#travaux" className="btn btn-primary">{ui.home.heroCtaWork}</Link>
+              <Link href="#contact" className="btn btn-ghost">{ui.home.heroCtaContact}</Link>
             </div>
             <div className="flex gap-6 flex-wrap text-[13.5px]" style={{ color: "var(--ink-2)" }}>
               <span><b style={{ color: "var(--ink)" }}>MIAGE</b> · Université Grenoble Alpes</span>
@@ -76,9 +89,9 @@ export default function Home() {
         <div className="max-w-content mx-auto px-6">
           <Reveal>
             <div className="mb-11 max-w-[640px]">
-              <span className="eyebrow block mb-3">Travaux sélectionnés</span>
-              <h2 className="text-[clamp(26px,3.4vw,34px)] mb-3.5">Des projets qui racontent une décision.</h2>
-              <p className="text-[18px]" style={{ color: "var(--ink-2)" }}>Chaque projet suit la même logique : le contexte métier, le problème, la décision prise, et ce qui a été construit.</p>
+              <span className="eyebrow block mb-3">{ui.home.workEyebrow}</span>
+              <h2 className="text-[clamp(26px,3.4vw,34px)] mb-3.5">{ui.home.workTitle}</h2>
+              <p className="text-[18px]" style={{ color: "var(--ink-2)" }}>{ui.home.workLead}</p>
             </div>
           </Reveal>
 
@@ -99,18 +112,18 @@ export default function Home() {
                       <div className="flex flex-wrap items-center gap-4">
                         {p.detailed && (
                           <Link href={`/projets/${p.slug}`} className="arrow-link">
-                            {p.featured ? "Lire l'étude de cas complète" : "Voir le détail"} →
+                            {p.featured ? ui.home.readFullCase : ui.home.seeDetail} →
                           </Link>
                         )}
                         {p.github && (
                           <a href={p.github} target="_blank" rel="noopener" className="inline-flex items-center gap-2 text-[13.5px] font-medium transition-colors hover:text-accent" style={{ color: "var(--ink-2)" }}>
-                            <GithubIcon size={15} /> Code sur GitHub
+                            <GithubIcon size={15} /> {ui.home.codeOnGithub}
                           </a>
                         )}
                         {p.githubPrivate && (
                           <span className="inline-flex items-center gap-2 text-[13px] font-mono" style={{ color: "var(--ink-3)" }}>
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                            Dépôt privé (client)
+                            {ui.home.privateRepo}
                           </span>
                         )}
                       </div>
@@ -147,8 +160,8 @@ export default function Home() {
         <div className="max-w-content mx-auto px-6">
           <Reveal>
             <div className="mb-11 max-w-[640px]">
-              <span className="eyebrow block mb-3">Compétences</span>
-              <h2 className="text-[clamp(26px,3.4vw,34px)]">Ce que je sais faire, par domaine.</h2>
+              <span className="eyebrow block mb-3">{ui.home.skillsEyebrow}</span>
+              <h2 className="text-[clamp(26px,3.4vw,34px)]">{ui.home.skillsTitle}</h2>
             </div>
           </Reveal>
           <div className="grid md:grid-cols-2 gap-4">
@@ -169,8 +182,8 @@ export default function Home() {
         <div className="max-w-content mx-auto px-6">
           <Reveal>
             <div className="mb-11 max-w-[640px]">
-              <span className="eyebrow block mb-3">Recommandation</span>
-              <h2 className="text-[clamp(26px,3.4vw,34px)]">Ce qu'en dit mon tuteur de stage.</h2>
+              <span className="eyebrow block mb-3">{ui.home.recoEyebrow}</span>
+              <h2 className="text-[clamp(26px,3.4vw,34px)]">{ui.home.recoTitle}</h2>
             </div>
           </Reveal>
           <Reveal>
@@ -185,7 +198,7 @@ export default function Home() {
                 </div>
                 <span className="ml-auto text-[12px] font-mono hidden sm:inline-flex items-center gap-1.5" style={{ color: "var(--ok)" }}>
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-                  Lettre disponible
+                  {ui.home.recoAvailable}
                 </span>
               </div>
             </div>
@@ -198,8 +211,8 @@ export default function Home() {
         <div className="max-w-content mx-auto px-6">
           <Reveal>
             <div className="mb-11 max-w-[640px]">
-              <span className="eyebrow block mb-3">Certifications</span>
-              <h2 className="text-[clamp(26px,3.4vw,34px)]">Une montée en compétences continue.</h2>
+              <span className="eyebrow block mb-3">{ui.home.certsEyebrow}</span>
+              <h2 className="text-[clamp(26px,3.4vw,34px)]">{ui.home.certsTitle}</h2>
             </div>
           </Reveal>
           <Reveal>
@@ -228,7 +241,7 @@ export default function Home() {
           </Reveal>
           <Reveal>
             <p className="text-[14.5px] mt-6 max-w-[620px]" style={{ color: "var(--ink-3)" }}>
-              Je complète régulièrement mes compétences en systèmes d'information, gestion de projet, data, IA et technologies SAP afin d'élargir ma vision des projets numériques.
+              {ui.home.certsFooter}
             </p>
           </Reveal>
         </div>
@@ -239,14 +252,14 @@ export default function Home() {
         <div className="max-w-content mx-auto px-6">
           <Reveal>
             <div className="max-w-[760px]">
-              <span className="eyebrow block mb-3">Parcours</span>
+              <span className="eyebrow block mb-3">{ui.home.parcoursEyebrow}</span>
               <h2 className="text-[clamp(26px,3.4vw,34px)] mb-3.5">{parcours.title}</h2>
               {parcours.paragraphs.map((p, i) => (
                 <p key={i} className="text-[18px] max-w-[760px] mb-4" style={{ color: "var(--ink-2)", lineHeight: 1.6 }}>{p}</p>
               ))}
               <div className="flex flex-wrap gap-x-8 gap-y-2 mt-2">
-                <Link href="/pourquoi-erp" className="arrow-link">Pourquoi les ERP ? →</Link>
-                <Link href="/methode" className="arrow-link">Ma façon de travailler →</Link>
+                <Link href="/pourquoi-erp" className="arrow-link">{ui.home.whyErpLink}</Link>
+                <Link href="/methode" className="arrow-link">{ui.home.methodLink}</Link>
               </div>
             </div>
           </Reveal>
@@ -270,7 +283,7 @@ export default function Home() {
       <section id="contact" className="py-24 text-center" style={{ background: "var(--surface)", borderTop: "1px solid var(--line)" }}>
         <div className="max-w-content mx-auto px-6">
           <Reveal>
-            <span className="eyebrow">Contact</span>
+            <span className="eyebrow">{ui.home.contactEyebrow}</span>
             <h2 className="text-[clamp(28px,4vw,40px)] mt-3 mb-4">{contact.title}</h2>
             <p className="text-[18px] max-w-[640px] mx-auto mb-[30px]" style={{ color: "var(--ink-2)", lineHeight: 1.6 }}>
               {contact.paragraph}

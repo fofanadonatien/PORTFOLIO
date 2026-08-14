@@ -61,11 +61,16 @@ Ouvre `data/content.ts`, trouve la liste `certifications`, et ajoute un bloc :
   badge: "SAP",
   title: "SAP — Module MM (Materials Management)",
   status: "done",          // "done" = pastille verte, "wip" = pastille orange
+  href: "",
   desc: "Ce que tu as appris et pourquoi cette certification renforce ton profil.",
 },
 ```
 
 Sauvegarde → la certif apparaît immédiatement.
+
+### Le site est aussi disponible en anglais (bouton FR/EN)
+
+Chaque fichier de `data/` a un miroir anglais dans **`data/en/`** (`data/en/profile.ts`, `data/en/content.ts`, `data/en/projects.ts`, `data/en/caseStudies.ts`). Si tu modifies un texte en français, pense à faire le même changement dans le fichier anglais correspondant — sinon la version anglaise du site restera avec l'ancien texte. Le détail complet (pourquoi c'est organisé ainsi, comment ça marche) est dans `DOCUMENTATION.md`, section 13.
 
 ### Brancher le lien GitHub du VRP (à faire après avoir créé ton dépôt public)
 

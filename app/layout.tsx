@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { profile } from "@/data/profile";
+import { LanguageProvider } from "@/components/LanguageProvider";
 
 // ⚠️ Remplace par ton vrai domaine si tu achètes un nom de domaine personnalisé plus tard
 const SITE_URL = "https://donatien-fofana.vercel.app";
@@ -72,7 +73,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="font-sans">{children}</body>
+      <body className="font-sans">
+        <LanguageProvider>{children}</LanguageProvider>
+      </body>
     </html>
   );
 }

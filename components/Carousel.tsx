@@ -1,12 +1,14 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { useLanguage } from "@/components/LanguageProvider";
 
 export type Slide = { label: string; src?: string };
 
 // Galerie qui défile seule (boucle, pause au survol) + flèches pour naviguer soi-même.
 // Tant qu'une capture n'a pas de `src`, elle affiche un emplacement gris "à intégrer".
 export function Carousel({ slides, autoPlayMs = 4200 }: { slides: Slide[]; autoPlayMs?: number }) {
+  const { t } = useLanguage();
   const [index, setIndex] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const count = slides.length;
@@ -50,7 +52,7 @@ export function Carousel({ slides, autoPlayMs = 4200 }: { slides: Slide[]; autoP
               <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="mx-auto mb-2.5 opacity-50">
                 <rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18M9 21V9" />
               </svg>
-              {slide.label}<br /><span className="opacity-70">(à intégrer)</span>
+              {slide.label}<br /><span className="opacity-70">{t.ui.carousel.placeholder}</span>
             </div>
           )}
         </div>
@@ -60,7 +62,7 @@ export function Carousel({ slides, autoPlayMs = 4200 }: { slides: Slide[]; autoP
         <>
           <button
             type="button"
-            aria-label="Image précédente"
+            aria-label={t.ui.carousel.prev}
             onClick={() => go(-1)}
             className="absolute left-2.5 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full grid place-items-center opacity-70 hover:opacity-100 transition-opacity"
             style={{ background: "var(--surface)", border: "1px solid var(--line)", color: "var(--ink-2)" }}
@@ -69,7 +71,7 @@ export function Carousel({ slides, autoPlayMs = 4200 }: { slides: Slide[]; autoP
           </button>
           <button
             type="button"
-            aria-label="Image suivante"
+            aria-label={t.ui.carousel.next}
             onClick={() => go(1)}
             className="absolute right-2.5 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full grid place-items-center opacity-70 hover:opacity-100 transition-opacity"
             style={{ background: "var(--surface)", border: "1px solid var(--line)", color: "var(--ink-2)" }}

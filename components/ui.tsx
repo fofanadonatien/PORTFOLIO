@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { profile } from "@/data/profile";
+import { useLanguage } from "@/components/LanguageProvider";
 
 // Révèle au scroll. `delay` (ms) permet un effet d'apparition en cascade.
 export function Reveal({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
@@ -49,15 +49,17 @@ export function GithubIcon({ size = 15 }: { size?: number }) {
 }
 
 export function Footer() {
+  const { t } = useLanguage();
+  const { profile, ui } = t;
   return (
     <footer style={{ borderTop: "1px solid var(--line)", background: "var(--surface)" }} className="py-9">
       <div className="max-w-content mx-auto px-6 flex flex-wrap justify-between items-center gap-4 text-[13px]" style={{ color: "var(--ink-2)" }}>
-        <span>© 2026 {profile.name} — Futur consultant ERP / SI</span>
+        <span>© 2026 {profile.name} — {ui.footer.tagline}</span>
         <div className="flex gap-5 flex-wrap">
-          <Link href="/#travaux" className="hover:text-accent transition-colors">Travaux</Link>
-          <Link href="/methode" className="hover:text-accent transition-colors">Ma méthode</Link>
-          <Link href="/pourquoi-erp" className="hover:text-accent transition-colors">Pourquoi les ERP</Link>
-          <Link href="/#contact" className="hover:text-accent transition-colors">Contact</Link>
+          <Link href="/#travaux" className="hover:text-accent transition-colors">{ui.footer.travaux}</Link>
+          <Link href="/methode" className="hover:text-accent transition-colors">{ui.footer.methode}</Link>
+          <Link href="/pourquoi-erp" className="hover:text-accent transition-colors">{ui.footer.pourquoiErp}</Link>
+          <Link href="/#contact" className="hover:text-accent transition-colors">{ui.footer.contact}</Link>
         </div>
       </div>
     </footer>

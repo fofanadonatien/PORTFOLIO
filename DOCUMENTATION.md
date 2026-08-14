@@ -20,7 +20,8 @@ Il complète `GUIDE.md` (qui explique comment lancer/modifier/déployer rapideme
 10. [Comment tout s'articule (le schéma général)](#10-comment-tout-sarticule-le-schéma-général)
 11. [Lancer, modifier, déployer — en bref](#11-lancer-modifier-déployer--en-bref)
 12. [Reconstruire ce projet depuis zéro](#12-reconstruire-ce-projet-depuis-zéro)
-13. [Glossaire](#13-glossaire)
+13. [Le système de traduction FR/EN](#13-le-système-de-traduction-fren)
+14. [Glossaire](#14-glossaire)
 
 ---
 
@@ -97,10 +98,11 @@ C'est le concept le plus important à comprendre dans ce projet.
 - Si un composant a besoin d'interactivité (clic, scroll, minuteur, `localStorage`...), on doit le transformer en **« Client Component »** en ajoutant `"use client";` tout en haut du fichier. Il sera alors aussi exécuté dans le navigateur.
 
 Dans ce projet :
-- `app/page.tsx`, `app/methode/page.tsx`, `app/pourquoi-erp/page.tsx`, `app/projets/[slug]/page.tsx` → Server Components (pas de `"use client"` en haut)
-- `components/Nav.tsx`, `components/ui.tsx`, `components/Carousel.tsx` → Client Components (ils utilisent `useState`/`useEffect`, donc `"use client";` en première ligne)
+- `components/Nav.tsx`, `components/ui.tsx`, `components/Carousel.tsx`, `components/LanguageProvider.tsx` → Client Components (ils utilisent `useState`/`useEffect`/un contexte React, donc `"use client";` en première ligne)
+- `app/page.tsx` → Client Component aussi (voir section 13 : il doit réagir instantanément au changement de langue, donc il ne peut pas rester un Server Component)
+- `app/methode/page.tsx`, `app/pourquoi-erp/page.tsx`, `app/projets/[slug]/page.tsx` → Server Components très courts, qui ne font que déclarer les métadonnées SEO (`metadata`, `generateStaticParams`) et afficher un Client Component voisin (`MethodeClient.tsx`, `PourquoiErpClient.tsx`, `CaseStudyClient.tsx`) qui, lui, contient tout l'affichage réel
 
-Un Server Component peut très bien **afficher** un Client Component à l'intérieur de lui (c'est ce qui se passe : `app/page.tsx` est un Server Component qui affiche `<Nav />`, qui elle est un Client Component). L'inverse n'est pas vrai directement.
+Un Server Component peut très bien **afficher** un Client Component à l'intérieur de lui — c'est même le rôle exact de ces trois pages : rester un Server Component juste assez longtemps pour exporter les métadonnées, puis déléguer tout le rendu à un Client Component. L'inverse n'est pas vrai : un Client Component ne peut pas exporter `metadata` ou `generateStaticParams`, d'où ce découpage en deux fichiers à chaque fois qu'une page a besoin des deux.
 
 ### 2.6 Le routage par dossiers (App Router)
 
@@ -167,23 +169,32 @@ portfolio/
 │   ├── sitemap.ts               # Génère /sitemap.xml (SEO)
 │   ├── robots.ts                # Génère /robots.txt (SEO)
 │   ├── methode/
-│   │   └── page.tsx            # Page /methode ("Ma façon de travailler")
+│   │   ├── page.tsx            # Coquille serveur : métadonnées SEO + <MethodeClient />
+│   │   └── MethodeClient.tsx   # Tout l'affichage réel de /methode (Client Component, traduit)
 │   ├── pourquoi-erp/
-│   │   └── page.tsx            # Page /pourquoi-erp
+│   │   ├── page.tsx            # Coquille serveur : métadonnées SEO + <PourquoiErpClient />
+│   │   └── PourquoiErpClient.tsx
 │   └── projets/
 │       └── [slug]/
-│           └── page.tsx        # Page /projets/phaseo, /projets/vrp, /projets/supermarche
+│           ├── page.tsx        # Coquille serveur : generateStaticParams + metadata + <CaseStudyClient />
+│           └── CaseStudyClient.tsx  # Tout l'affichage réel d'une étude de cas (traduit)
 │
 ├── components/                 # Des morceaux réutilisables sur plusieurs pages
-│   ├── Nav.tsx                 # Barre de navigation en haut de page
+│   ├── Nav.tsx                 # Barre de navigation en haut de page (+ bouton FR/EN)
 │   ├── ui.tsx                  # Petits composants génériques (Reveal, RichText, Footer, GithubIcon)
-│   └── Carousel.tsx             # Carrousel d'images avec flèches + défilement auto
+│   ├── Carousel.tsx             # Carrousel d'images avec flèches + défilement auto
+│   └── LanguageProvider.tsx     # Le "cerveau" de la traduction FR/EN (voir section 13)
 │
 ├── data/                        # TOUT le contenu texte du site (aucun code d'affichage ici)
-│   ├── profile.ts               # Identité, hero, chiffres clés du bandeau
-│   ├── content.ts               # Compétences, certifications, recommandation, parcours, méthode...
-│   ├── projects.ts              # Les 3 projets affichés sur l'accueil + projets secondaires
-│   └── caseStudies.ts           # Le contenu complet des études de cas détaillées
+│   ├── profile.ts               # Identité, hero, chiffres clés du bandeau (FR)
+│   ├── content.ts               # Compétences, certifications, recommandation, parcours, méthode... (FR)
+│   ├── projects.ts              # Les 3 projets affichés sur l'accueil + projets secondaires (FR)
+│   ├── caseStudies.ts           # Le contenu complet des études de cas détaillées (FR)
+│   └── en/                      # Miroir EXACT des 4 fichiers ci-dessus, en anglais
+│       ├── profile.ts
+│       ├── content.ts
+│       ├── projects.ts
+│       └── caseStudies.ts
 │
 ├── public/                      # Fichiers statiques servis tels quels (images, favicon...)
 │   └── donatien.jpg
@@ -261,8 +272,9 @@ Le plus gros fichier de contenu. Six exports :
 | `parcours` | Le texte "d'un chantier de VRD à un socle Oracle" | `app/page.tsx`, section Parcours |
 | `lookingFor` | "Ce que je recherche" (encart avant le contact) | `app/page.tsx` |
 | `contact` | Titre + texte de la section contact ("Travaillons ensemble") | `app/page.tsx` |
-| `method` | Les 8 étapes de la démarche (Comprendre → Améliorer) | `app/methode/page.tsx` |
-| `whyErp` | Le récit personnel BTP → PHASEO → conseil ERP | `app/pourquoi-erp/page.tsx` |
+| `method` | Les 8 étapes de la démarche (Comprendre → Améliorer) | `app/methode/MethodeClient.tsx` |
+| `whyErp` | Le récit personnel BTP → PHASEO → conseil ERP | `app/pourquoi-erp/PourquoiErpClient.tsx` |
+| `ui` | Tous les petits textes d'interface qui n'ont pas d'autre "maison" : libellés de menu, boutons, titres de section fixes, aria-labels (voir section 13) | Un peu partout : `Nav.tsx`, `Footer`, `Carousel.tsx`, toutes les pages |
 
 Chaque certification a un champ `href: ""` (vide pour l'instant). Le composant qui l'affiche (`app/page.tsx`) vérifie s'il est rempli : si oui, la carte devient un vrai lien cliquable (`<a href={c.href}>`) ; sinon, c'est un simple `<div>`. C'est un pattern courant : **préparer une structure de données avant d'avoir toute l'information**, pour ne pas avoir à retoucher le code plus tard — juste la donnée.
 
@@ -293,7 +305,28 @@ Chaque étude de cas suit la même structure :
 - `captures` : les emplacements de la galerie d'images (juste un `label` pour l'instant — le jour où tu ajoutes une vraie image, tu ajoutes un champ `src` à l'objet correspondant, voir 6.3)
 - `repoUrl` / `repoLabel` / `repoNote` : comment afficher le lien vers le dépôt (public, privé, ou projet d'équipe)
 
-C'est ce fichier que tu enrichis quand tu veux ajouter une 4ᵉ étude de cas : copier un bloc, l'adapter, puis ajouter `detailed: true` sur le projet correspondant dans `projects.ts`. Comme la page `app/projets/[slug]/page.tsx` génère automatiquement une page par clé de `caseStudies`, il n'y a **rien d'autre** à faire pour que `/projets/ton-nouveau-slug` existe.
+C'est ce fichier que tu enrichis quand tu veux ajouter une 4ᵉ étude de cas : copier un bloc, l'adapter, puis ajouter `detailed: true` sur le projet correspondant dans `projects.ts`. Comme la page `app/projets/[slug]/page.tsx` génère automatiquement une page par clé de `caseStudies`, il n'y a **rien d'autre** à faire pour que `/projets/ton-nouveau-slug` existe côté français.
+
+### 5.5 `data/en/*.ts` — la version anglaise
+
+Ces 4 fichiers (`profile.ts`, `content.ts`, `projects.ts`, `caseStudies.ts`) sont l'exact miroir de ceux décrits ci-dessus, mais en anglais. Même noms d'exports, mêmes clés, même nombre d'éléments dans chaque tableau — seul le texte change.
+
+Pour garantir que le miroir ne se désynchronise jamais, chaque export anglais est typé à partir de l'export français correspondant :
+
+```ts
+// data/en/profile.ts
+import { profile as profileFr } from "@/data/profile";
+
+export const profile: typeof profileFr = {
+  name: "Donatien Fofana",
+  role: "MIAGE student · heading toward ERP / IS consulting",
+  // ...
+};
+```
+
+`typeof profileFr` dit à TypeScript : « ce que j'écris ici doit avoir exactement la même forme que `profileFr` ». Si tu ajoutes un champ côté français et que tu oublies de l'ajouter côté anglais, `npm run build` te le signale immédiatement — c'est ce filet de sécurité qui permet de traduire un gros site sans craindre d'oublier un champ quelque part.
+
+Voir la section 13 pour comprendre comment ces fichiers sont réellement utilisés (le composant `LanguageProvider`).
 
 ---
 
@@ -307,7 +340,8 @@ C'est un **Client Component** (`"use client";` en ligne 1) car il a besoin d'int
 - `const [dark, setDark] = useState(false)` : mémorise si le thème sombre est actif
 - `useEffect(...)` : au chargement du composant, lit le thème déjà appliqué (`document.documentElement.getAttribute("data-theme")`) et branche un écouteur d'évènement sur le scroll (`window.addEventListener("scroll", ...)`). Le `return () => window.removeEventListener(...)` est important : c'est le **nettoyage**, exécuté quand le composant disparaît, pour ne pas laisser un écouteur actif inutilement.
 - `toggle()` : change l'attribut `data-theme` sur `<html>`, sauvegarde le choix dans `localStorage` (pour s'en souvenir à la prochaine visite), et met à jour le state.
-- Le tableau de liens (`["Travaux", "/#travaux"], ...`) est parcouru avec `.map()` pour générer les liens du menu.
+- Le tableau de liens (`[ui.nav.travaux, "/#travaux"], ...`) est parcouru avec `.map()` pour générer les liens du menu — les libellés viennent de `ui.nav.*` (voir section 13) au lieu d'être écrits en dur, pour pouvoir changer de langue.
+- Le bouton FR/EN appelle `setLang("fr")` / `setLang("en")`, fourni par `useLanguage()` (section 13.2) — exactement le même principe que `toggle()` pour le thème, mais pour la langue.
 
 ### 6.2 `components/ui.tsx` — la boîte à outils
 
@@ -343,6 +377,12 @@ Client Component qui affiche une galerie d'images qui défile automatiquement en
 
 **Ajouter une vraie image plus tard** : dans `data/caseStudies.ts`, chaque capture ressemble à `{ label: "Interface web Angular" }`. Le jour où tu as le fichier, tu mets l'image dans `public/` (ex. `public/phaseo-angular.jpg`) puis tu ajoutes `src: "/phaseo-angular.jpg"` à côté du `label`. Rien d'autre à changer : le composant `Carousel` bascule automatiquement du placeholder gris à la vraie image.
 
+Comme `Carousel` affiche aussi deux petits textes fixes (les aria-labels des flèches, le mot "à intégrer"), il appelle lui aussi `useLanguage()` pour les piocher dans `ui.carousel.*` plutôt que de les écrire en dur.
+
+### 6.4 `components/LanguageProvider.tsx` — le sélecteur de langue
+
+Voir la section 13, entièrement dédiée à ce composant : c'est lui qui rend tout le site traduisible.
+
 ---
 
 ## 7. Les pages (`app/`), une par une
@@ -353,11 +393,12 @@ C'est le point d'entrée technique de tout le site. Il définit :
 - `export const metadata` : les informations SEO par défaut (titre, description, Open Graph pour les aperçus de lien sur les réseaux, mots-clés). Chaque page peut ensuite surcharger `title`/`description` via son propre `export const metadata` (c'est ce que font `app/methode/page.tsx` et `app/pourquoi-erp/page.tsx`).
 - Un `<script>` en ligne qui applique le thème (clair/sombre) **avant** que React ne s'exécute, pour éviter un « flash » d'un mauvais thème au chargement.
 - Un `<script type="application/ld+json">` : des données structurées lisibles par les moteurs de recherche (« ceci est une personne, voici son métier, ses liens... »), pour améliorer le référencement.
+- `<LanguageProvider>{children}</LanguageProvider>` : tout le site est enveloppé dans le composant qui gère la langue (section 13) — c'est ce qui permet à n'importe quelle page ou composant d'appeler `useLanguage()`.
 - `{children}` : c'est ici que la page active (accueil, méthode, étude de cas...) vient s'insérer.
 
 ### 7.2 `app/page.tsx` — la page d'accueil
 
-La plus longue. Elle empile des sections (`<section>` ou `<header>`), chacune commentée (`{/* HERO */}`, `{/* TRAVAUX */}`...). Dans l'ordre :
+La plus longue. C'est un **Client Component** (`"use client"` en ligne 1) : la toute première ligne du corps du composant est `const { t } = useLanguage();`, puis `const { profile, stats, skills, ... } = t;` — tout le contenu qui alimente la page vient de cet objet `t`, qui pointe vers le dictionnaire français ou anglais selon la langue choisie (section 13). Elle empile ensuite des sections (`<section>` ou `<header>`), chacune commentée (`{/* HERO */}`, `{/* TRAVAUX */}`...). Dans l'ordre :
 
 1. **Hero** (`<header id="top">`) : titre, texte d'intro, boutons, photo + mini-bio.
 2. **Bandeau chiffres** : `stats.map(...)` génère une carte par chiffre. Depuis le passage à 5 chiffres, la grille est en `grid-cols-2 sm:grid-cols-3 lg:grid-cols-5` (2 colonnes sur mobile, 3 sur tablette, 5 sur grand écran) — chaque carte a sa propre bordure, donc peu importe combien d'éléments il y a, la mise en page reste correcte (contrairement à l'ancienne version qui comptait les bordures « à la main » et ne fonctionnait que pour exactement 4 éléments).
@@ -375,16 +416,18 @@ La plus longue. Elle empile des sections (`<section>` ou `<header>`), chacune co
 9. **Contact** (`id="contact"`) : titre/texte issus de `contact` (dans `content.ts`), boutons email/téléphone/LinkedIn/GitHub construits à partir de `profile.contact`.
 10. **`<Footer />`**.
 
-### 7.3 `app/projets/[slug]/page.tsx` — les études de cas
+### 7.3 `app/projets/[slug]/page.tsx` et `CaseStudyClient.tsx` — les études de cas
 
-C'est une **route dynamique**. Deux fonctions spéciales de Next.js, en plus du composant de page :
+C'est une **route dynamique**, et depuis la mise en place du FR/EN, elle est **scindée en deux fichiers** (voir le rappel en section 2.5) :
+
+**`page.tsx` (Server Component)** ne fait que le strict nécessaire côté serveur — deux fonctions spéciales de Next.js, puis il délègue l'affichage :
 
 ```tsx
 export function generateStaticParams() {
   return Object.keys(caseStudies).map((slug) => ({ slug }));
 }
 ```
-`Object.keys(caseStudies)` renvoie `["phaseo", "vrp", "supermarche"]`. Cette fonction dit à Next.js : « génère à l'avance une page pour chacun de ces slugs ». C'est ce qui fait qu'ajouter une entrée dans `caseStudies.ts` suffit à créer une nouvelle page, sans toucher à ce fichier.
+`Object.keys(caseStudies)` renvoie `["phaseo", "vrp", "supermarche"]` (les clés du fichier français — les deux langues ont exactement les mêmes clés). Cette fonction dit à Next.js : « génère à l'avance une page pour chacun de ces slugs ». C'est ce qui fait qu'ajouter une entrée dans `caseStudies.ts` suffit à créer une nouvelle page, sans toucher à ce fichier.
 
 ```tsx
 export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
@@ -393,25 +436,25 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   return { title: cs.title, description: cs.intro };
 }
 ```
-Génère un `<title>` différent par page (utile pour le SEO et l'onglet du navigateur).
+Génère un `<title>` différent par page (utile pour le SEO et l'onglet du navigateur). Cette métadonnée est calculée côté serveur, donc **toujours en français** — même si le visiteur bascule ensuite en anglais une fois la page chargée (limite acceptée du choix « bascule instantanée, même URL » plutôt que des adresses séparées `/en/...`, voir section 13).
 
 ```tsx
 export default function CaseStudyPage({ params }: { params: { slug: string } }) {
-  const cs = caseStudies[params.slug];
-  if (!cs) notFound();
-  // ...
+  return <CaseStudyClient slug={params.slug} />;
 }
 ```
-`params.slug` est automatiquement rempli par Next.js selon l'URL visitée (`/projets/phaseo` → `params.slug === "phaseo"`). `notFound()` affiche la page 404 standard de Next.js si le slug ne correspond à rien dans `caseStudies` (protection utile si tu tapes une mauvaise URL).
+`params.slug` est automatiquement rempli par Next.js selon l'URL visitée (`/projets/phaseo` → `params.slug === "phaseo"`). Le `slug` est simplement transmis en prop au Client Component.
+
+**`CaseStudyClient.tsx` (Client Component)** reçoit ce `slug`, puis fait `const cs = t.caseStudies[slug];` — donc à chaque changement de langue, `cs` change instantanément, et toute la page se redessine dans la bonne langue. `notFound()` (importé de `next/navigation`) fonctionne aussi bien dans un Client Component que dans un Server Component : si jamais `cs` est introuvable, il affiche la page 404 standard.
 
 Le reste du fichier affiche, dans l'ordre : fil d'ariane, en-tête, méta (grille de 4 encarts), les `blocks` (`.map()` sur les sections), la galerie `captures` (grille statique, contrairement au carrousel de l'accueil — ici on veut voir plusieurs images à la fois), la stack technique + le lien vers le dépôt, et un bloc d'appel à l'action.
 
-### 7.4 `app/methode/page.tsx` et `app/pourquoi-erp/page.tsx`
+### 7.4 `app/methode/` et `app/pourquoi-erp/` — même scission serveur/client
 
-Deux pages statiques (pas de route dynamique), structurées pareil : lien retour, en-tête, contenu, appel à l'action, `Footer`.
+Exactement le même principe que pour les études de cas : un `page.tsx` (Server Component, quelques lignes) qui exporte juste `export const metadata = {...}` et affiche `<MethodeClient />` ou `<PourquoiErpClient />` ; tout le contenu réel vit dans le Client Component associé (`MethodeClient.tsx` / `PourquoiErpClient.tsx`), qui appelle `useLanguage()` pour tout traduire.
 
-- `/methode` parcourt `method` (dans `content.ts`) avec `.map()` et affiche chaque étape avec un `Reveal` dont le `delay` augmente à chaque itération (`delay={i * 70}`) : c'est ce qui crée l'effet de cascade au scroll. Une ligne verticale (`<div className="absolute left-[19px] ...">`) est positionnée en arrière-plan pour relier visuellement les étapes, en pur CSS (`position: absolute`), sans dépendre du nombre d'étapes.
-- `/pourquoi-erp` affiche simplement les paragraphes de `whyErp.paragraphs`.
+- `MethodeClient.tsx` parcourt `method` (dans `content.ts` / `en/content.ts`) avec `.map()` et affiche chaque étape avec un `Reveal` dont le `delay` augmente à chaque itération (`delay={i * 70}`) : c'est ce qui crée l'effet de cascade au scroll. Une ligne verticale (`<div className="absolute left-[19px] ...">`) est positionnée en arrière-plan pour relier visuellement les étapes, en pur CSS (`position: absolute`), sans dépendre du nombre d'étapes.
+- `PourquoiErpClient.tsx` affiche simplement les paragraphes de `whyErp.paragraphs`.
 
 ### 7.5 `app/sitemap.ts` et `app/robots.ts`
 
@@ -543,7 +586,105 @@ Si un jour tu veux recréer un site avec cette architecture, sans repartir de ce
 
 ---
 
-## 13. Glossaire
+## 13. Le système de traduction FR/EN
+
+Le site propose un bouton **FR / EN** dans la barre de navigation, qui traduit instantanément toutes les pages, sans recharger et sans changer d'adresse (`/projets/phaseo` reste `/projets/phaseo` dans les deux langues). Ce choix — plutôt que des adresses séparées `/fr/...` et `/en/...` — a été fait pour rester simple à maintenir : voir la comparaison des deux approches ci-dessous.
+
+### 13.1 Deux façons de faire un site bilingue (et pourquoi celle-ci)
+
+- **Adresses séparées** (`/en/projets/phaseo`) : la méthode la plus « propre » pour le référencement (chaque langue a sa propre URL indexable par Google), mais elle demande de restructurer tout le routage du site (un dossier `app/[locale]/...`, une configuration de middleware pour détecter la langue du visiteur...). Beaucoup plus complexe à maintenir pour un débutant.
+- **Bascule instantanée côté navigateur** (celle utilisée ici) : une seule adresse, un simple state React qui dit « je suis en français » ou « je suis en anglais », mémorisé dans `localStorage` exactement comme le thème clair/sombre. Beaucoup plus simple, au prix d'une petite limite : les métadonnées SEO (`<title>`, description) restent toujours en français, puisqu'elles sont calculées côté serveur, avant de savoir quelle langue le visiteur va choisir.
+
+### 13.2 `components/LanguageProvider.tsx` — le cœur du système
+
+Ce fichier fait deux choses : il regroupe **tout** le contenu du site (français ET anglais) dans un seul objet, et il expose la langue actuelle à travers l'application grâce à un **Context React**.
+
+**Le dictionnaire.** Le fichier importe les 4 fichiers de données français et leurs 4 équivalents anglais, puis les range dans un objet :
+
+```ts
+const dictionaries = {
+  fr: { profile: profileFr, stats: statsFr, skills: skillsFr, /* ... */ },
+  en: { profile: profileEn, stats: statsEn, skills: skillsEn, /* ... */ },
+};
+```
+
+Le composant lit ensuite `dictionaries[lang]` selon la langue en cours — c'est cet objet complet (appelé `t`, pour « translations ») que chaque page/composant reçoit et dans lequel il pioche ce dont il a besoin (`t.profile`, `t.caseStudies`, `t.ui.nav`, etc.).
+
+**Le Context.** Un Context React est un moyen de rendre une valeur disponible à *tous* les composants d'une branche de l'arbre, sans avoir à la faire passer manuellement de composant en composant (ce qu'on appelle le « prop drilling »). Sans Context, il aurait fallu faire passer `lang` en prop depuis `app/layout.tsx` jusqu'au moindre bouton du site — avec un Context, n'importe quel composant appelle simplement `useLanguage()` et récupère tout ce dont il a besoin :
+
+```tsx
+const LanguageContext = createContext<{ lang: Lang; setLang: (l: Lang) => void; t: Dictionary } | null>(null);
+
+export function LanguageProvider({ children }: { children: ReactNode }) {
+  const [lang, setLangState] = useState<Lang>("fr");
+
+  useEffect(() => {
+    const saved = localStorage.getItem("lang");
+    if (saved === "en" || saved === "fr") setLangState(saved);
+  }, []);
+
+  // ...
+
+  return (
+    <LanguageContext.Provider value={{ lang, setLang, t: dictionaries[lang] }}>
+      {children}
+    </LanguageContext.Provider>
+  );
+}
+
+export function useLanguage() {
+  const ctx = useContext(LanguageContext);
+  if (!ctx) throw new Error("useLanguage must be used within a LanguageProvider");
+  return ctx;
+}
+```
+
+C'est exactement le même principe que le thème clair/sombre dans `Nav.tsx` (état par défaut, puis lecture de `localStorage` dans un `useEffect`), sauf qu'ici la valeur est partagée par **tout le site** via un Context, alors que le thème ne concernait que `Nav.tsx` lui-même (les couleurs, elles, passent par les variables CSS — voir section 8.1 — donc n'ont pas besoin de Context).
+
+`useLanguage()` est le hook que tout composant traduit appelle en premier :
+
+```tsx
+const { t } = useLanguage();
+const { profile, stats, skills } = t;
+```
+
+Si un composant appelle `useLanguage()` sans être **à l'intérieur** de `<LanguageProvider>` (posé une seule fois, dans `app/layout.tsx`, autour de `{children}`), la fonction lève une erreur explicite plutôt que de planter silencieusement plus loin — c'est une pratique courante pour les hooks de Context.
+
+### 13.3 Pourquoi certaines pages ont dû devenir des Client Components
+
+Traduire un texte **instantanément**, sans recharger la page, veut dire que le texte doit se redessiner quand le state `lang` change — et seuls les Client Components peuvent réagir à un changement de state (section 2.5). C'est pour ça que :
+- `app/page.tsx` est passé entièrement en Client Component (il n'avait pas de métadonnées à préserver, donc pas besoin de le scinder) ;
+- `app/methode`, `app/pourquoi-erp` et `app/projets/[slug]` ont chacun été scindés en une coquille Server Component (juste les métadonnées + `generateStaticParams`) et un Client Component voisin qui porte tout l'affichage traduit (section 7.3-7.4).
+
+### 13.4 Le dictionnaire `ui` : les petits textes qui n'ont pas de "maison"
+
+La plupart du contenu (le profil, les compétences, les études de cas...) vit déjà dans des objets bien identifiés (`profile`, `skills`, `caseStudies`...). Mais certains textes sont de simples morceaux d'interface qui n'appartiennent à aucun de ces objets : le libellé du bouton "Voir mes travaux", le mot "Aperçus" au-dessus de la galerie d'une étude de cas, l'aria-label "Image suivante" du carrousel...
+
+Tous ces petits textes ont été regroupés dans un export `ui` (dans `data/content.ts` pour le français, `data/en/content.ts` pour l'anglais), organisé par zone du site :
+
+```ts
+export const ui = {
+  nav: { travaux: "Travaux", competences: "Compétences", /* ... */ },
+  footer: { tagline: "Futur consultant ERP / SI", /* ... */ },
+  carousel: { prev: "Image précédente", next: "Image suivante", placeholder: "(à intégrer)" },
+  home: { heroCtaWork: "Voir mes travaux", workEyebrow: "Travaux sélectionnés", /* ... */ },
+  methodPage: { back: "Retour à l'accueil", /* ... */ },
+  whyErpPage: { /* ... */ },
+  caseStudyPage: { overview: "Aperçus", technologies: "Technologies", /* ... */ },
+};
+```
+
+Une page l'utilise ainsi : `const { ui } = t;` puis `{ui.home.heroCtaWork}` dans le JSX, au lieu d'écrire `"Voir mes travaux"` en dur.
+
+### 13.5 Ajouter ou modifier un texte traduit
+
+- **Modifier un texte existant** : édite la valeur correspondante dans `data/content.ts` (français) et pense à faire le même changement dans `data/en/content.ts` (anglais) si le sens change. Comme pour tout le reste du site, tu n'as jamais besoin de toucher au code des composants pour changer un texte.
+- **Ajouter un nouveau texte d'interface** (un nouveau bouton, un nouveau titre fixe) : ajoute-le dans le bon sous-objet de `ui` (ou crée-en un nouveau) dans **les deux fichiers** `data/content.ts` et `data/en/content.ts`, avec exactement la même clé. Si tu oublies la version anglaise, `npm run build` te le signalera (grâce au typage `typeof uiFr` employé dans `data/en/content.ts`, section 5.5).
+- **Ajouter une nouvelle certification / un nouveau projet / une nouvelle étude de cas** : comme d'habitude (sections 5.2 à 5.4), mais en te rappelant de dupliquer l'ajout dans le fichier `data/en/*.ts` correspondant, avec la même clé/le même `slug`.
+
+---
+
+## 14. Glossaire
 
 | Terme | Définition simple |
 |---|---|
@@ -567,3 +708,6 @@ Si un jour tu veux recréer un site avec cette architecture, sans repartir de ce
 | **Variable CSS (`--nom`)** | Une valeur CSS réutilisable, redéfinissable (ex. pour un thème sombre) |
 | **Tailwind CSS** | Bibliothèque de classes utilitaires CSS courtes, combinées directement dans le HTML |
 | **Alias d'import (`@/`)** | Un raccourci configuré (`tsconfig.json`) qui pointe vers la racine du projet |
+| **Context (React)** | Un mécanisme pour rendre une valeur disponible à tous les composants d'une branche de l'arbre, sans la faire passer manuellement en props à chacun |
+| **Provider** | Le composant qui "fournit" la valeur d'un Context à ses enfants (ex. `LanguageProvider`) |
+| **`typeof X`** | En TypeScript, récupère automatiquement le type d'une valeur `X` déjà existante, pour l'imposer ailleurs (utilisé pour garder `data/en/*.ts` parfaitement aligné sur `data/*.ts`) |

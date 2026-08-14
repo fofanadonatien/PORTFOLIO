@@ -156,6 +156,77 @@ export const method = [
   },
 ];
 
+// Tous les petits textes d'interface (boutons, titres de section fixes, aria-labels)
+// qui ne vivent pas déjà dans un objet de contenu ci-dessus.
+export const ui = {
+  nav: {
+    travaux: "Travaux",
+    competences: "Compétences",
+    methode: "Ma méthode",
+    pourquoiErp: "Pourquoi les ERP",
+    parcours: "Parcours",
+    contact: "Me contacter",
+    themeToggle: "Changer de thème",
+  },
+  footer: {
+    tagline: "Futur consultant ERP / SI",
+    travaux: "Travaux",
+    methode: "Ma méthode",
+    pourquoiErp: "Pourquoi les ERP",
+    contact: "Contact",
+  },
+  carousel: {
+    prev: "Image précédente",
+    next: "Image suivante",
+    placeholder: "(à intégrer)",
+  },
+  home: {
+    heroCtaWork: "Voir mes travaux",
+    heroCtaContact: "Me contacter",
+    workEyebrow: "Travaux sélectionnés",
+    workTitle: "Des projets qui racontent une décision.",
+    workLead: "Chaque projet suit la même logique : le contexte métier, le problème, la décision prise, et ce qui a été construit.",
+    readFullCase: "Lire l'étude de cas complète",
+    seeDetail: "Voir le détail",
+    codeOnGithub: "Code sur GitHub",
+    privateRepo: "Dépôt privé (client)",
+    skillsEyebrow: "Compétences",
+    skillsTitle: "Ce que je sais faire, par domaine.",
+    recoEyebrow: "Recommandation",
+    recoTitle: "Ce qu'en dit mon tuteur de stage.",
+    recoAvailable: "Lettre disponible",
+    certsEyebrow: "Certifications",
+    certsTitle: "Une montée en compétences continue.",
+    certsFooter: "Je complète régulièrement mes compétences en systèmes d'information, gestion de projet, data, IA et technologies SAP afin d'élargir ma vision des projets numériques.",
+    parcoursEyebrow: "Parcours",
+    whyErpLink: "Pourquoi les ERP ? →",
+    methodLink: "Ma façon de travailler →",
+    contactEyebrow: "Contact",
+  },
+  methodPage: {
+    back: "Retour à l'accueil",
+    eyebrow: "Ma façon de travailler",
+    title: "Une même démarche, quel que soit le projet.",
+    lead: "Que ce soit pour moderniser un ERP ou optimiser un algorithme de tournées, j'applique la même logique : comprendre avant d'agir, et documenter ce qui a été décidé.",
+    ctaText: "Voir cette démarche appliquée sur un vrai projet ?",
+    ctaButton: "Lire l'étude de cas PHASEO",
+  },
+  whyErpPage: {
+    back: "Retour à l'accueil",
+    ctaCase: "Lire l'étude de cas PHASEO",
+    ctaMethod: "Ma façon de travailler",
+  },
+  caseStudyPage: {
+    back: "Retour aux travaux",
+    overview: "Aperçus",
+    capturePlaceholder: "(capture à intégrer)",
+    technologies: "Technologies",
+    viewOnGithub: "Voir sur GitHub",
+    ctaText: "Ce type de raisonnement vous parle ?",
+    ctaButton: "Me contacter",
+  },
+};
+
 // Page /pourquoi-erp — le fil entre le BTP, PHASEO et le conseil en SI.
 export const whyErp = {
   eyebrow: "Pourquoi les ERP ?",
